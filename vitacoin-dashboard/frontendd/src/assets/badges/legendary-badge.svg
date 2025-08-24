@@ -1,0 +1,27 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="legendaryGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#E6E6FA;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#9932CC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8A2BE2;stop-opacity:1" />
+    </radialGradient>
+    <filter id="legendaryShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Crown base -->
+  <path d="M15 45 L25 35 L35 45 L40 30 L45 45 L55 35 L65 45 L60 60 L20 60 Z" fill="url(#legendaryGrad)" stroke="#4B0082" stroke-width="2" filter="url(#legendaryShadow)"/>
+  
+  <!-- Crown jewels -->
+  <circle cx="30" cy="40" r="3" fill="#FFD700" opacity="0.8"/>
+  <circle cx="40" cy="35" r="4" fill="#FFD700" opacity="0.8"/>
+  <circle cx="50" cy="40" r="3" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- V letter in center -->
+  <path d="M32 48 L40 58 L48 48" stroke="#4B0082" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Decorative stars -->
+  <path d="M20 25 L22 30 L27 30 L23 33 L25 38 L20 35 L15 38 L17 33 L13 30 L18 30 Z" fill="#FFD700" opacity="0.6"/>
+  <path d="M60 25 L62 30 L67 30 L63 33 L65 38 L60 35 L55 38 L57 33 L53 30 L58 30 Z" fill="#FFD700" opacity="0.6"/>
+</svg>

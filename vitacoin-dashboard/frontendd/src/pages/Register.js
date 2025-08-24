@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import '../GlobalStyles.css';
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -34,16 +34,57 @@ function Register() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "40px auto", padding: 24, borderRadius: 16, background: "#fff", boxShadow: "0 2px 16px #eee" }}>
-      <h2 style={{ textAlign: "center", marginBottom: 24 }}>Register</h2>
-      <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <input type="email" placeholder="Gmail" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-        {error && <div style={{ color: "red", textAlign: "center" }}>{error}</div>}
-        <button type="submit" style={{ background: "#ffd700", color: "#222", fontWeight: "bold", borderRadius: "8px", padding: "10px" }}>Register</button>
-      </form>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">
+          Vitacoin <span className="page-title-highlight">Register</span>
+        </h1>
+      </div>
+      
+      <div className="content-card">
+        <form onSubmit={handleRegister} className="form-container">
+          <input 
+            type="text" 
+            placeholder="Username" 
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          <input 
+            type="email" 
+            placeholder="Email Address" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          <input 
+            type="password" 
+            placeholder="Confirm Password" 
+            value={confirmPassword} 
+            onChange={(e) => setConfirmPassword(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          
+          {error && (
+            <div className="message message-error">
+              {error}
+            </div>
+          )}
+          
+          <button type="submit" className="form-button">Create Account</button>
+        </form>
+      </div>
     </div>
   );
 }

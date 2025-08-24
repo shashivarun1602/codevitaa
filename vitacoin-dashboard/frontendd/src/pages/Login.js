@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import '../GlobalStyles.css';
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -31,22 +32,51 @@ function Login() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '40px auto', padding: 24, borderRadius: 12, boxShadow: '0 2px 12px #eee', background: '#fff' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 12, borderRadius: 6, border: '1px solid #ccc' }} />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 12, borderRadius: 6, border: '1px solid #ccc' }} />
-        <button type="submit" style={{ width: '100%', padding: 10, borderRadius: 6, background: '#ffd700', color: '#222', fontWeight: 'bold', border: 'none', fontSize: '1em' }}>Login</button>
-      </form>
-      <div style={{ textAlign: 'center', marginTop: 16 }}>
-        <span>New user? </span>
-        <button onClick={() => navigate('/register')} style={{ background: 'none', color: '#007bff', border: 'none', textDecoration: 'underline', cursor: 'pointer', fontWeight: 'bold' }}>Register here</button>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">
+          Vitacoin <span className="page-title-highlight">Login</span>
+        </h1>
       </div>
-      {message && (
-        <div style={{ marginTop: '20px', color: message.includes('successful') ? 'green' : 'red', textAlign: 'center' }}>
-          {message}
+      
+      <div className="content-card">
+        <form onSubmit={handleLogin} className="form-container">
+          <input 
+            type="email" 
+            placeholder="Email Address" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            className="form-input"
+            required 
+          />
+          <button type="submit" className="form-button">Login to Account</button>
+        </form>
+        
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <span>New to Vitacoin? </span>
+          <button 
+            onClick={() => navigate('/register')} 
+            className="text-link"
+            style={{ background: 'none', border: 'none' }}
+          >
+            Create Account
+          </button>
         </div>
-      )}
+        
+        {message && (
+          <div className={`message ${message.includes('successful') ? 'message-success' : 'message-error'}`}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

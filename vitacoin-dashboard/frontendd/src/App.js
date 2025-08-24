@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./App.css";
+import "./AppNavigation.css";
 
 const mockUser = {
   name: "Demo User",
@@ -22,18 +23,53 @@ function App() {
 
   return (
     <Router>
-      <div style={{ padding: 24 }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <button onClick={() => setView("dashboard")}>Dashboard</button>
-        <button onClick={() => setView("leaderboard")}>Leaderboard</button>
-        <button onClick={() => setView("transactions")}>Transactions</button>
-        <button onClick={() => setView("earn")}>Earn</button>
-        <button onClick={() => setView("profile")}>Profile</button>
-        <button onClick={() => setView("login")}>Login</button>
-        <button onClick={() => setView("register")}>Register</button>
-      </div>
+      <div className="app-container">
+        <nav className="app-navigation">
+          <button 
+            className={`nav-button ${view === "dashboard" ? "active" : ""}`}
+            onClick={() => setView("dashboard")}
+          >
+            Dashboard
+          </button>
+          <button 
+            className={`nav-button ${view === "leaderboard" ? "active" : ""}`}
+            onClick={() => setView("leaderboard")}
+          >
+            Leaderboard
+          </button>
+          <button 
+            className={`nav-button ${view === "transactions" ? "active" : ""}`}
+            onClick={() => setView("transactions")}
+          >
+            Transactions
+          </button>
+          <button 
+            className={`nav-button ${view === "earn" ? "active" : ""}`}
+            onClick={() => setView("earn")}
+          >
+            Earn
+          </button>
+          <button 
+            className={`nav-button ${view === "profile" ? "active" : ""}`}
+            onClick={() => setView("profile")}
+          >
+            Profile
+          </button>
+          <button 
+            className={`nav-button ${view === "login" ? "active" : ""}`}
+            onClick={() => setView("login")}
+          >
+            Login
+          </button>
+          <button 
+            className={`nav-button ${view === "register" ? "active" : ""}`}
+            onClick={() => setView("register")}
+          >
+            Register
+          </button>
+        </nav>
 
-        <div>
+        <main className="app-content">
           {view === "dashboard" && <Dashboard user={mockUser} />}
           {view === "leaderboard" && <Leaderboard limit={10} />}
           {view === "transactions" && <Transactions userId={mockUser._id} />}
@@ -41,7 +77,7 @@ function App() {
           {view === "profile" && <Profile />}
           {view === "login" && <Login />}
           {view === "register" && <Register />}
-        </div>
+        </main>
       </div>
     </Router>
   );

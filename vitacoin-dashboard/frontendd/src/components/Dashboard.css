@@ -1,0 +1,432 @@
+/* Dashboard.css - Clean Minimalist VitaCoin Dashboard */
+
+/* CSS Variables */
+:root {
+  --primary-gold: #ffd700;
+  --primary-gold-dark: #e6c200;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --bg-white: #ffffff;
+  --bg-light: #f8f9fa;
+  --bg-card: #f5f5f5;
+  --border-light: #e0e0e0;
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+  --button-dark: #2c3e50;
+}
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-light);
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  margin-top: -1px;
+}
+
+.dashboard-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background-color: var(--bg-white);
+  border-radius: 0;
+  padding: 40px;
+  box-shadow: none;
+  min-height: calc(100vh - 60px);
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.title-highlight {
+  color: var(--primary-gold);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.coins-display {
+  background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-dark) 100%);
+  color: var(--button-dark);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 18px;
+  border: 2px solid var(--primary-gold-dark);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: coinPulse 2s ease-in-out infinite;
+}
+
+.coins-display::before {
+  content: '💰';
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.coins-display::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes coinPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--bg-card);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary-gold);
+  color: var(--button-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Welcome Section */
+.welcome-section {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.welcome-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.welcome-name {
+  color: var(--primary-gold);
+}
+
+.welcome-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.claim-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.claim-button-container {
+  position: relative;
+  width: 100%;
+}
+
+.claim-button {
+  background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-dark) 100%);
+  color: var(--button-dark);
+  border: none;
+  padding: 16px 32px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.claim-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.claim-button.loading {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  cursor: not-allowed;
+}
+
+.claim-button.success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  animation: successPulse 0.6s ease-out;
+}
+
+.claim-button.disabled {
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.claim-button.disabled:hover {
+  transform: none;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.success-animation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.success-icon {
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+.floating-coins {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.floating-coin {
+  position: absolute;
+  font-weight: bold;
+  font-size: 18px;
+  color: var(--primary-gold);
+  animation: floatUp 2s ease-out forwards;
+}
+
+.floating-coin:nth-child(1) {
+  left: -30px;
+  animation-delay: 0s;
+}
+
+.floating-coin:nth-child(2) {
+  left: 0px;
+  animation-delay: 0.2s;
+}
+
+.floating-coin:nth-child(3) {
+  left: 30px;
+  animation-delay: 0.4s;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1.5);
+  }
+}
+
+.claim-description {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* Loading Placeholder */
+.loading-placeholder {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  color: transparent;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Quick Links */
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+
+.quick-link-item {
+  background-color: var(--bg-card);
+  padding: 24px 16px;
+  border-radius: var(--radius);
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-link-item:hover {
+  background-color: #eeeeee;
+}
+
+/* Progress Section */
+.progress-section {
+  background-color: var(--bg-white);
+  padding: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.progress-container {
+  width: 100%;
+}
+
+/* Badge Progress Bar */
+.w-full.bg-gray-200.rounded-full.h-2 {
+  background-color: #e0e0e0;
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bg-blue-600.h-2.rounded-full {
+  background-color: var(--primary-gold);
+  height: 8px;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 24px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 40px;
+  }
+  
+  .header-right {
+    justify-content: center;
+  }
+  
+  .welcome-title {
+    font-size: 28px;
+  }
+  
+  .quick-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
+  
+  .welcome-title {
+    font-size: 24px;
+  }
+  
+  .quick-links {
+    grid-template-columns: 1fr;
+  }
+}

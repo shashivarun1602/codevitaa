@@ -1,0 +1,432 @@
+/* Badge System Styles */
+
+.badge-system {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.badge-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.badge-stats {
+  background: var(--primary-gold);
+  color: var(--button-dark);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Progress to Next Badge */
+.next-badge-progress {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid var(--border-light);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-text {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.progress-percentage {
+  color: var(--primary-gold);
+  font-weight: 700;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* Badge Grid */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.badge-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-card.unlocked {
+  border-color: var(--primary-gold);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+}
+
+.badge-card.active {
+  border-color: var(--primary-gold);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+  animation: activeBadgePulse 2s ease-in-out infinite;
+}
+
+.badge-card.locked {
+  opacity: 0.6;
+}
+
+.badge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge Image */
+.badge-image-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.badge-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  padding: 8px;
+}
+
+.badge-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lock-icon {
+  font-size: 40px;
+  color: #ccc;
+}
+
+.unlock-badge-svg {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.badge-card.unlocked .badge-image {
+  animation: badgeGlow 3s ease-in-out infinite;
+}
+
+.active-indicator {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--primary-gold);
+  color: var(--button-dark);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--button-dark);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Badge Info */
+.badge-info {
+  margin-bottom: 15px;
+}
+
+.badge-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.badge-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.badge-requirement {
+  background: var(--bg-card);
+  color: var(--primary-gold);
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Badge Overlay for Locked Badges */
+.badge-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+}
+
+.coins-needed {
+  background: var(--text-muted);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Badge Unlock Modal */
+.badge-unlock-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.unlock-content {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  animation: modalSlideUp 0.5s ease-out;
+}
+
+.unlock-animation {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.unlock-badge {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  margin: 0 auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  animation: unlockBadgeBounce 1s ease-out;
+}
+
+.unlock-sparkles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 20px;
+  animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.sparkle:nth-child(1) {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle:nth-child(2) {
+  top: 20%;
+  right: 10%;
+  animation-delay: 0.5s;
+}
+
+.sparkle:nth-child(3) {
+  bottom: 20%;
+  left: 10%;
+  animation-delay: 1s;
+}
+
+.sparkle:nth-child(4) {
+  bottom: 10%;
+  right: 20%;
+  animation-delay: 1.5s;
+}
+
+.unlock-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-gold);
+  margin: 0 0 10px 0;
+}
+
+.unlock-badge-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+}
+
+.unlock-description {
+  color: var(--text-secondary);
+  margin: 0 0 25px 0;
+  line-height: 1.4;
+}
+
+.unlock-close {
+  background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-dark) 100%);
+  color: var(--button-dark);
+  border: none;
+  padding: 12px 30px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.unlock-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Animations */
+@keyframes activeBadgePulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 4px 30px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+  50% { box-shadow: 0 4px 25px rgba(255, 215, 0, 0.5); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes unlockBadgeBounce {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+  25% { transform: translateY(-10px) rotate(90deg); opacity: 0.8; }
+  50% { transform: translateY(-5px) rotate(180deg); opacity: 1; }
+  75% { transform: translateY(-15px) rotate(270deg); opacity: 0.6; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .badge-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .badge-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+  
+  .unlock-content {
+    padding: 30px 20px;
+  }
+  
+  .unlock-badge {
+    width: 100px;
+    height: 100px;
+    font-size: 50px;
+  }
+}
