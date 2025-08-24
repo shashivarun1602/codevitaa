@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import '../GlobalStyles.css';
-import './Transactions.css';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import ApiService from '../services/api';
+import './Transactions.css';
+import '../GlobalStyles.css';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -13,9 +14,12 @@ const Transactions = () => {
   const [sortBy, setSortBy] = useState('date');
   const [refreshing, setRefreshing] = useState(false);
 
-  const userId = '507f1f77bcf86cd799439011'; // Demo user ID
+  const { user } = useAuth();
+  const userId = user?._id;
 
   const fetchTransactions = async (page = 1) => {
+    if (!userId) return;
+    
     try {
       setLoading(page === 1);
       const response = await ApiService.getUserTransactions(userId, page, 10);
@@ -72,8 +76,10 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    fetchTransactions(currentPage);
-  }, [currentPage]);
+    if (userId) {
+      fetchTransactions(currentPage);
+    }
+  }, [currentPage, userId]);
 
   const filteredTransactions = transactions.filter(transaction => {
     if (filter === 'all') return true;

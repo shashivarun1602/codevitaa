@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import './Earn.css';
 import '../GlobalStyles.css';
-import BadgeSystem from '../components/BadgeSystem';
 import ApiService from '../services/api';
 
 const Earn = () => {
+  const { user, refreshUser } = useAuth();
+  const { showSuccess, showError } = useToast();
   const [activeQuiz, setActiveQuiz] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [userCoins, setUserCoins] = useState(75);
   const [userAnswers, setUserAnswers] = useState([]);
   const [showReview, setShowReview] = useState(false);
 
@@ -198,32 +200,31 @@ const Earn = () => {
 
   const completeQuiz = async () => {
     const percentage = (score / activeQuiz.questions.length) * 100;
-    const coinsEarned = percentage >= 60 ? activeQuiz.coins : Math.floor(activeQuiz.coins * 0.3);
+    const earnedCoins = Math.floor((score / activeQuiz.questions.length) * activeQuiz.coins);
     
     try {
-      // Record transaction for quiz completion
-      const userId = '507f1f77bcf86cd799439011'; // Demo user ID
+      // Record quiz completion transaction
       const response = await ApiService.earnCoins(
-        userId, 
-        coinsEarned, 
-        `Quiz completion: ${activeQuiz.title} (${percentage.toFixed(1)}% score)`,
+        user._id,
+        earnedCoins,
+        `Quiz completed: ${activeQuiz.title} (${score}/${activeQuiz.questions.length})`,
         'quiz'
       );
       
       if (response.success) {
-        setUserCoins(response.newBalance);
-        console.log('Quiz completion recorded:', response.transaction);
-      } else {
-        // Fallback to local update if API fails
-        setUserCoins(userCoins + coinsEarned);
+        await refreshUser(); // Update global user state
+        showSuccess(`Quiz completed! You earned ${earnedCoins} coins! New balance: ${response.newBalance}`);
       }
     } catch (error) {
       console.error('Error recording quiz completion:', error);
-      // Fallback to local update if API fails
-      setUserCoins(userCoins + coinsEarned);
+      showError('Failed to record quiz completion. Please try again.');
     }
     
-    setQuizCompleted(true);
+    setActiveQuiz(null);
+    setCurrentQuestion(0);
+    setSelectedAnswer('');
+    setQuizCompleted(false);
+    setUserAnswers([]);
   };
 
   const resetQuiz = () => {
@@ -236,36 +237,27 @@ const Earn = () => {
   };
 
   const completeTask = async (task) => {
+    if (!user?._id) return;
+    
     try {
-      // Record transaction for task completion
-      const userId = '507f1f77bcf86cd799439011'; // Demo user ID
+      // Record task completion transaction
       const response = await ApiService.earnCoins(
-        userId, 
-        task.coins, 
-        `Task completion: ${task.title}`,
+        user._id,
+        task.coins,
+        `Task completed: ${task.title}`,
         'task'
       );
       
       if (response.success) {
-        setUserCoins(response.newBalance);
-        console.log('Task completion recorded:', response.transaction);
-        alert(`Task completed! You earned ${task.coins} coins! New balance: ${response.newBalance}`);
-      } else {
-        // Fallback to local update if API fails
-        setUserCoins(userCoins + task.coins);
-        alert(`Task completed! You earned ${task.coins} coins!`);
+        await refreshUser(); // Update global user state
+        showSuccess(`Task completed! You earned ${task.coins} coins! New balance: ${response.newBalance}`);
       }
     } catch (error) {
       console.error('Error recording task completion:', error);
-      // Fallback to local update if API fails
-      setUserCoins(userCoins + task.coins);
-      alert(`Task completed! You earned ${task.coins} coins!`);
+      showError('Failed to record task completion. Please try again.');
     }
   };
 
-  const handleBadgeUnlock = (badge) => {
-    console.log('Badge unlocked in Earn page:', badge.name);
-  };
 
   // Show quiz review with correct/incorrect answers
   if (showReview) {
@@ -427,7 +419,7 @@ const Earn = () => {
         </h1>
         <div className="user-coins-display">
           <span className="coin-icon">🪙</span>
-          {userCoins} Coins
+          {user?.coins || 0} Coins
         </div>
       </div>
       
@@ -462,11 +454,6 @@ const Earn = () => {
         </div>
       </div>
 
-      {/* Badge System */}
-      <BadgeSystem 
-        userCoins={userCoins} 
-        onBadgeUnlock={handleBadgeUnlock}
-      />
 
       {/* Tasks Section */}
       <div className="section">

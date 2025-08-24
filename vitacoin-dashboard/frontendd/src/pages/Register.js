@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import ApiService from '../services/api';
 import '../GlobalStyles.css';
 
 function Register() {
@@ -6,30 +10,51 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    setMessage("");
+    setLoading(true);
+    
+    // Validation
+    if (!username || !email || !password || !confirmPassword) {
+      showError('Please fill in all fields.');
+      setLoading(false);
       return;
     }
-    setError("");
+    
+    if (password !== confirmPassword) {
+      showError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
+    
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+    
     try {
-      const res = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert('Registration successful! Please login.');
-        window.location.href = '/login';
+      const response = await ApiService.register(username, email, password);
+      
+      if (response.success) {
+        // Use AuthContext login method to properly set user state
+        await login(response.token, response.user);
+        showSuccess('Registration successful! Welcome to Vitacoin!');
+        setTimeout(() => navigate('/dashboard'), 1000);
       } else {
-        setError(data.message || 'Registration failed');
+        showError(response.message || 'Registration failed.');
       }
-    } catch (err) {
-      setError('Registration failed');
+    } catch (error) {
+      showError(error.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,14 +101,27 @@ function Register() {
             required 
           />
           
-          {error && (
-            <div className="message message-error">
-              {error}
+          {message && (
+            <div className={`message ${message.includes('successful') ? 'message-success' : 'message-error'}`}>
+              {message}
             </div>
           )}
           
-          <button type="submit" className="form-button">Create Account</button>
+          <button type="submit" className="form-button" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
         </form>
+        
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <span>Already have an account? </span>
+          <button 
+            onClick={() => navigate('/login')} 
+            className="text-link"
+            style={{ background: 'none', border: 'none' }}
+          >
+            Sign In
+          </button>
+        </div>
       </div>
     </div>
   );

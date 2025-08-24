@@ -13,10 +13,64 @@
 }
 
 /* Remove default margins from Dashboard container */
-.app-content .dashboard-container {
+.app-content .dashbo.main-content {
+  margin-left: 0;
   padding: 20px;
-  margin: 0;
-  background: var(--bg-primary);
+  min-height: calc(100vh - 80px);
+  background: var(--bg-color);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-color);
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+/* Responsive Main Content */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 16px;
+    min-height: calc(100vh - 60px);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 12px;
+    min-height: calc(100vh - 60px);
+  }
+  
+  .auth-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 8px;
+    min-height: calc(100vh - 56px);
+  }
+  
+  .auth-content {
+    padding: 12px;
+  }
 }
 
 .app-content .dashboard-content {

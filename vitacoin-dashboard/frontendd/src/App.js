@@ -1,108 +1,167 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router } from 'react-router-dom';
-import Dashboard from "./components/Dashboard";
-import Leaderboard from "./components/Leaderboard";
-import Transactions from "./pages/Transactions";
-import Earn from "./pages/Earn";
-import Profile from "./pages/Profile";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import ThemeToggle from "./components/ThemeToggle";
-import "./App.css";
-import "./AppNavigation.css";
-import "./styles/DarkMode.css";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import './App.css';
+import './AppNavigation.css';
+import './GlobalStyles.css';
+import './styles/responsive.css';
+import { ThemeProvider } from './contexts/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
+import CoinBalance from './components/CoinBalance';
+import './styles/DarkMode.css';
 
-const mockUser = {
-  name: "Demo User",
-  email: "demo@example.com",
-  coins: 75,
-  badges: ["Starter", "Contributor"],
-  _id: "demo-1",
+// Import components
+import Dashboard from './components/Dashboard';
+import Leaderboard from './pages/Leaderboard';
+import Transactions from './pages/Transactions';
+import Earn from './pages/Earn';
+import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+const AppNavigation = () => {
+  const location = useLocation();
+  const { isAuthenticated, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  return (
+    <nav className="app-navigation">
+      <Link to={isAuthenticated ? "/dashboard" : "/"} className="nav-brand">
+        <div className="brand-icon">💰</div>
+        <span className="brand-text">Vitacoin</span>
+      </Link>
+      
+      {/* Mobile menu button */}
+      <button 
+        className="mobile-menu-button"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        <span className="hamburger-icon">☰</span>
+      </button>
+
+      <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+        {isAuthenticated ? (
+          <>
+            <Link to="/dashboard" className={`nav-button ${location.pathname === '/dashboard' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">🏠</span>
+              <span>Dashboard</span>
+            </Link>
+            <Link to="/earn" className={`nav-button ${location.pathname === '/earn' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">💼</span>
+              <span>Earn</span>
+            </Link>
+            <Link to="/leaderboard" className={`nav-button ${location.pathname === '/leaderboard' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">🏆</span>
+              <span>Leaderboard</span>
+            </Link>
+            <Link to="/transactions" className={`nav-button ${location.pathname === '/transactions' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">📊</span>
+              <span>Transactions</span>
+            </Link>
+            <Link to="/profile" className={`nav-button ${location.pathname === '/profile' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">👤</span>
+              <span>Profile</span>
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className={`nav-button ${location.pathname === '/login' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">🔑</span>
+              <span>Login</span>
+            </Link>
+            <Link to="/register" className={`nav-button ${location.pathname === '/register' ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <span className="nav-icon">📝</span>
+              <span>Register</span>
+            </Link>
+          </>
+        )}
+      </div>
+      
+      <div className="nav-actions">
+        {isAuthenticated && <CoinBalance />}
+        <ThemeToggle />
+        {isAuthenticated && (
+          <button onClick={logout} className="nav-button logout-button">
+            <span className="nav-icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        )}
+      </div>
+    </nav>
+  );
 };
 
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+  
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
+
 function App() {
-  const [view, setView] = useState("dashboard");
-
   return (
-    <ThemeProvider>
-      <Router>
-        <div className="app-container">
-          <nav className="app-navigation">
-            <div className="nav-brand">
-              <span className="brand-icon">🪙</span>
-              <span className="brand-text">Vitacoin</span>
+    <AuthProvider>
+      <ToastProvider>
+        <ThemeProvider>
+          <Router>
+            <div className="App">
+              <AppContent />
             </div>
-            
-            <div className="nav-links">
-              <button 
-                className={`nav-button ${view === "dashboard" ? "active" : ""}`}
-                onClick={() => setView("dashboard")}
-              >
-                <span className="nav-icon">📊</span>
-                Dashboard
-              </button>
-              <button 
-                className={`nav-button ${view === "leaderboard" ? "active" : ""}`}
-                onClick={() => setView("leaderboard")}
-              >
-                <span className="nav-icon">🏆</span>
-                Leaderboard
-              </button>
-              <button 
-                className={`nav-button ${view === "transactions" ? "active" : ""}`}
-                onClick={() => setView("transactions")}
-              >
-                <span className="nav-icon">💰</span>
-                Transactions
-              </button>
-              <button 
-                className={`nav-button ${view === "earn" ? "active" : ""}`}
-                onClick={() => setView("earn")}
-              >
-                <span className="nav-icon">⚡</span>
-                Earn
-              </button>
-              <button 
-                className={`nav-button ${view === "profile" ? "active" : ""}`}
-                onClick={() => setView("profile")}
-              >
-                <span className="nav-icon">👤</span>
-                Profile
-              </button>
-              <button 
-                className={`nav-button ${view === "login" ? "active" : ""}`}
-                onClick={() => setView("login")}
-              >
-                <span className="nav-icon">🔑</span>
-                Login
-              </button>
-              <button 
-                className={`nav-button ${view === "register" ? "active" : ""}`}
-                onClick={() => setView("register")}
-              >
-                <span className="nav-icon">📝</span>
-                Register
-              </button>
-            </div>
-            
-            <div className="nav-actions">
-              <ThemeToggle />
-            </div>
-          </nav>
+          </Router>
+        </ThemeProvider>
+      </ToastProvider>
+    </AuthProvider>
+  );
+}
 
-          <main className="app-content">
-            {view === "dashboard" && <Dashboard user={mockUser} />}
-            {view === "leaderboard" && <Leaderboard limit={10} />}
-            {view === "transactions" && <Transactions userId={mockUser._id} />}
-            {view === "earn" && <Earn />}
-            {view === "profile" && <Profile />}
-            {view === "login" && <Login />}
-            {view === "register" && <Register />}
-          </main>
-        </div>
-      </Router>
-    </ThemeProvider>
+function AppContent() {
+  const { isAuthenticated, user } = useAuth();
+  
+  return (
+    <>
+      <AppNavigation />
+      <main className={isAuthenticated ? "main-content" : "auth-content"}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Dashboard user={user} />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard user={user} />
+            </ProtectedRoute>
+          } />
+          <Route path="/leaderboard" element={
+            <ProtectedRoute>
+              <Leaderboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/transactions" element={
+            <ProtectedRoute>
+              <Transactions />
+            </ProtectedRoute>
+          } />
+          <Route path="/earn" element={
+            <ProtectedRoute>
+              <Earn />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </main>
+    </>
   );
 }
 

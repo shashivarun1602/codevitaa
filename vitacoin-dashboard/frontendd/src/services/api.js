@@ -1,11 +1,29 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 class ApiService {
+  constructor() {
+    this.token = localStorage.getItem('authToken');
+  }
+
+  setToken(token) {
+    this.token = token;
+    if (token) {
+      localStorage.setItem('authToken', token);
+    } else {
+      localStorage.removeItem('authToken');
+    }
+  }
+
+  getAuthHeaders() {
+    return this.token ? { 'Authorization': `Bearer ${this.token}` } : {};
+  }
+
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
         ...options.headers,
       },
       ...options,
@@ -32,7 +50,7 @@ class ApiService {
   }
 
   async claimDailyBonus(userId) {
-    return this.request(`/user/${userId}/claim`, {
+    return this.request(`/user/${userId}/claim-bonus`, {
       method: 'POST',
     });
   }
@@ -79,6 +97,41 @@ class ApiService {
     return this.request('/create-demo-user', {
       method: 'POST',
     });
+  }
+
+  // Authentication endpoints
+  async register(username, email, password) {
+    const response = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, email, password }),
+    });
+    
+    if (response.token) {
+      this.setToken(response.token);
+    }
+    
+    return response;
+  }
+
+  async login(email, password) {
+    const response = await this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    
+    if (response.token) {
+      this.setToken(response.token);
+    }
+    
+    return response;
+  }
+
+  async logout() {
+    this.setToken(null);
+  }
+
+  isAuthenticated() {
+    return !!this.token;
   }
 
   // Health check

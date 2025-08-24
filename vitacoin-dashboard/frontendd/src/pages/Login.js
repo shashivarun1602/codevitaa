@@ -1,33 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import ApiService from '../services/api';
 import '../GlobalStyles.css';
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
+    
+    if (!email || !password) {
+      showError('Please fill in all fields.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (res.ok && data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        setMessage('Login successful! Redirecting...');
-        setTimeout(() => navigate('/'), 1000);
+      const response = await ApiService.login(email, password);
+      
+      if (response.success) {
+        // Use AuthContext login method to properly set user state
+        await login(response.token, response.user);
+        showSuccess('Login successful! Redirecting to dashboard...');
+        setTimeout(() => navigate('/dashboard'), 1000);
       } else {
-        setMessage(data.message || 'Login failed.');
+        showError(response.message || 'Login failed.');
       }
-    } catch (err) {
-      setMessage('Login failed.');
+    } catch (error) {
+      showError(error.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +69,9 @@ function Login() {
             className="form-input"
             required 
           />
-          <button type="submit" className="form-button">Login to Account</button>
+          <button type="submit" className="form-button" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login to Account'}
+          </button>
         </form>
         
         <div style={{ textAlign: 'center', marginTop: 24 }}>
@@ -71,11 +85,6 @@ function Login() {
           </button>
         </div>
         
-        {message && (
-          <div className={`message ${message.includes('successful') ? 'message-success' : 'message-error'}`}>
-            {message}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './Dashboard.css';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import StreakCalendar from './StreakCalendar';
 import ApiService from '../services/api';
-import BadgeSystem from './BadgeSystem';
+import './Dashboard.css';
+import '../GlobalStyles.css';
 
 // ===== Mock Data =====
 const mockUser = {
@@ -36,38 +39,51 @@ const ClaimButton = ({ onClaim, userId }) => {
   // Check claim status on component mount
   useEffect(() => {
     const checkClaimStatus = async () => {
+      if (!userId) return;
+      
       try {
-        const response = await ApiService.claimDailyBonus(userId || 'user-123');
-        // If we get an error about already claimed, disable the button
-        setCanClaim(true);
+        // Check if user has already claimed today by checking lastClaimDate
+        const userData = await ApiService.getUserData(userId);
+        const lastClaim = userData.user.lastClaimDate;
+        const today = new Date().toDateString();
+        const lastClaimDate = lastClaim ? new Date(lastClaim).toDateString() : null;
+        
+        setCanClaim(lastClaimDate !== today);
       } catch (error) {
-        if (error.message.includes('already claimed')) {
-          setCanClaim(false);
-        }
+        console.error('Error checking claim status:', error);
+        setCanClaim(true); // Default to allowing claim if check fails
       }
     };
+    
     checkClaimStatus();
   }, [userId]);
 
   const handleClick = async () => {
-    if (canClaim && !isLoading) {
-      setIsLoading(true);
-      try {
-        const response = await ApiService.claimDailyBonus(userId || 'user-123');
-        if (response.success) {
-          onClaim(response.bonusAmount);
-          setShowSuccess(true);
-          setCanClaim(false);
-          setTimeout(() => setShowSuccess(false), 2000);
-        }
-      } catch (error) {
-        console.error('Failed to claim bonus:', error);
-        if (error.message.includes('already claimed')) {
-          setCanClaim(false);
-        }
-      } finally {
-        setIsLoading(false);
+    if (!canClaim || isLoading || !userId) return;
+    try {
+      setClaimStatus('claiming');
+      
+      const response = await ApiService.claimDailyBonus(userId);
+      
+      if (response.success) {
+        setClaimStatus('claimed');
+        setCanClaim(false);
+        setLastClaimDate(new Date().toISOString());
+        
+        // Update user data to reflect new coin balance
+        await onClaim();
+        
+        // Show success notification
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 2000);
+      } else {
+        setClaimStatus('error');
       }
+    } catch (error) {
+      console.error('Error claiming daily bonus:', error);
+      setClaimStatus('error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -201,15 +217,17 @@ const BadgeProgress = ({ badges }) => {
 };
 
 // ===== Main Dashboard =====
-const Dashboard = ({ user }) => {
-  const [userData, setUserData] = useState(user || mockUser);
-  const [coins, setCoins] = useState(userData.coins);
-  const [transactions, setTransactions] = useState([]);
+const Dashboard = () => {
+  const { user, refreshUser } = useAuth();
+  const { showSuccess, showError, showInfo } = useToast();
+  const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, claimed, error
+  const [lastClaimDate, setLastClaimDate] = useState(null);
+  const [canClaim, setCanClaim] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Demo user ID - in production, this would come from authentication
+  const userId = user?._id; 
   const DEMO_USER_ID = 'demo-user-123';
 
   useEffect(() => {
@@ -221,8 +239,10 @@ const Dashboard = ({ user }) => {
       setLoading(true);
       setError(null);
       
+      const userId = authUser?._id || userData._id || DEMO_USER_ID;
+      
       // Try to load user data from API
-      const response = await ApiService.getUserData(DEMO_USER_ID);
+      const response = await ApiService.getUserData(userId);
       setUserData(response.user);
       setCoins(response.user.coins);
       setTransactions(response.transactions || []);
@@ -244,21 +264,17 @@ const Dashboard = ({ user }) => {
     }
   };
 
-  const handleClaim = async (amount) => {
+  const handleClaim = async () => {
     try {
-      const response = await ApiService.claimDailyBonus(DEMO_USER_ID);
-      setCoins(response.newBalance);
-      
-      // Reload dashboard data to get updated transactions
-      setTimeout(() => {
-        loadDashboardData();
-      }, 1000);
-      
+      const userId = authUser?._id || userData._id || DEMO_USER_ID;
+      const response = await ApiService.claimDailyBonus(userId);
+      if (response.success) {
+        await refreshUser(); // Refresh user data from the database
+        loadDashboardData(); // Reload dashboard data
+      }
       return true;
     } catch (error) {
       console.error('Failed to claim bonus:', error);
-      // Fallback to local update
-      setCoins(prev => prev + amount);
       return false;
     }
   };
@@ -282,7 +298,6 @@ const Dashboard = ({ user }) => {
               <div className="loading-placeholder">Loading...</div>
             ) : (
               <>
-                <div className="coins-display">{coins} Coins</div>
                 <div className="user-profile">
                   <div className="user-avatar">{(userData.username || userData.name || "Demo User").charAt(0).toUpperCase()}</div>
                   <span className="user-name">{userData.username || userData.name || "Demo User"}</span>
@@ -300,11 +315,17 @@ const Dashboard = ({ user }) => {
           <p className="welcome-subtitle">Your daily rewards and progress await.</p>
           
           <div className="claim-section">
-            <ClaimButton onClaim={handleClaim} />
+            <ClaimButton onClaim={handleClaim} userId={authUser?._id || userData._id || DEMO_USER_ID} />
             <p className="claim-description">Claim your daily bonus and keep your streak alive.</p>
           </div>
         </div>
 
+
+        {/* Streak Calendar */}
+        <div className="dashboard-section">
+          <h2 className="section-title">📅 Daily Streak Calendar</h2>
+          <StreakCalendar />
+        </div>
 
         {/* Badge System */}
         <BadgeSystem 
