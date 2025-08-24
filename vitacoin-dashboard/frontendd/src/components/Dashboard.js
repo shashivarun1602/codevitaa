@@ -7,34 +7,17 @@ import './Dashboard.css';
 import '../GlobalStyles.css';
 
 // ===== Mock Data =====
-const mockUser = {
-  name: "Jane",
-  coins: 250,
-  badges: [
-    { name: "First Steps", progress: 100, goal: 100, icon: "👟" },
-    { name: "Explorer", progress: 80, goal: 100, icon: "🗺️" },
-    { name: "Code Master", progress: 20, goal: 50, icon: "💻" },
-  ],
-  _id: "user-123"
-};
-
 const mockLeaderboardData = [
   { username: "Ahmad", coins: 850 },
   { username: "Jane", coins: 780 },
   { username: "CodeGenius", coins: 690 },
 ];
 
-const mockTransactionsData = [
-  { type: "earn", amount: 20, description: "Quiz completed", date: new Date(Date.now() - 3600000) },
-  { type: "earn", amount: 10, description: "Daily login bonus", date: new Date(Date.now() - 7200000) },
-  { type: "spend", amount: 10, description: "Missed daily streak", date: new Date(Date.now() - 10800000) },
-];
-
 // ===== Components =====
 const ClaimButton = ({ onClaim, userId }) => {
   const [canClaim, setCanClaim] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const { showSuccess: showToastSuccess, showError } = useToast();
 
   // Check claim status on component mount
   useEffect(() => {
@@ -58,30 +41,24 @@ const ClaimButton = ({ onClaim, userId }) => {
     checkClaimStatus();
   }, [userId]);
 
+
   const handleClick = async () => {
     if (!canClaim || isLoading || !userId) return;
     try {
-      setClaimStatus('claiming');
+      setIsLoading(true);
       
       const response = await ApiService.claimDailyBonus(userId);
       
       if (response.success) {
-        setClaimStatus('claimed');
         setCanClaim(false);
-        setLastClaimDate(new Date().toISOString());
-        
-        // Update user data to reflect new coin balance
         await onClaim();
-        
-        // Show success notification
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
+        showToastSuccess(`Daily bonus claimed! You earned ${response.bonusAmount} coins!`);
       } else {
-        setClaimStatus('error');
+        showError(response.error || 'Failed to claim daily bonus');
       }
     } catch (error) {
       console.error('Error claiming daily bonus:', error);
-      setClaimStatus('error');
+      showError('Failed to claim daily bonus. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -92,18 +69,12 @@ const ClaimButton = ({ onClaim, userId }) => {
       <button
         onClick={handleClick}
         disabled={!canClaim || isLoading}
-        className={`claim-button ${canClaim ? 'active' : 'disabled'} ${isLoading ? 'loading' : ''} ${showSuccess ? 'success' : ''}`}
+        className={`claim-button ${canClaim ? 'active' : 'disabled'} ${isLoading ? 'loading' : ''}`}
       >
         {isLoading ? (
           <div className="loading-spinner">
             <div className="spinner"></div>
             <span>Processing...</span>
-          </div>
-        ) : showSuccess ? (
-          <div className="success-animation">
-            <span className="success-icon">✨</span>
-            <span>+10 Coins Earned!</span>
-            <span className="success-icon">✨</span>
           </div>
         ) : canClaim ? (
           <>
@@ -114,13 +85,6 @@ const ClaimButton = ({ onClaim, userId }) => {
           "Already Claimed"
         )}
       </button>
-      {showSuccess && (
-        <div className="floating-coins">
-          <div className="floating-coin">+10</div>
-          <div className="floating-coin">💰</div>
-          <div className="floating-coin">+10</div>
-        </div>
-      )}
     </div>
   );
 };
@@ -176,9 +140,16 @@ const Leaderboard = ({ limit }) => {
   );
 };
 
-const Transactions = ({ limit }) => (
-  <ul className="space-y-2">
-    {mockTransactionsData.slice(0, limit).map((tx, index) => (
+const Transactions = ({ limit }) => {
+  const mockTransactionsData = [
+    { type: "earn", amount: 20, description: "Quiz completed", date: new Date(Date.now() - 3600000) },
+    { type: "earn", amount: 10, description: "Daily login bonus", date: new Date(Date.now() - 7200000) },
+    { type: "spend", amount: 10, description: "Missed daily streak", date: new Date(Date.now() - 10800000) },
+  ];
+
+  return (
+    <ul className="space-y-2">
+      {mockTransactionsData.slice(0, limit).map((tx, index) => (
       <li
         key={index}
         className="flex justify-between items-center bg-white p-3 rounded-md border border-gray-200"
@@ -200,7 +171,8 @@ const Transactions = ({ limit }) => (
       </li>
     ))}
   </ul>
-);
+  );
+};
 
 const BadgeProgress = ({ badges }) => {
   const currentBadge = badges.find(b => b.progress < b.goal) || badges[badges.length - 1];
@@ -220,15 +192,11 @@ const BadgeProgress = ({ badges }) => {
 const Dashboard = () => {
   const { user, refreshUser } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
-  const [claimStatus, setClaimStatus] = useState('idle'); // idle, claiming, claimed, error
-  const [lastClaimDate, setLastClaimDate] = useState(null);
-  const [canClaim, setCanClaim] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const userId = user?._id; 
-  const DEMO_USER_ID = 'demo-user-123';
+  const userId = user?._id;
 
   useEffect(() => {
     loadDashboardData();
@@ -239,25 +207,13 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       
-      const userId = authUser?._id || userData._id || DEMO_USER_ID;
-      
-      // Try to load user data from API
-      const response = await ApiService.getUserData(userId);
-      setUserData(response.user);
-      setCoins(response.user.coins);
-      setTransactions(response.transactions || []);
-      
-      // Load leaderboard
-      const leaderboardData = await ApiService.getLeaderboard();
-      setLeaderboard(leaderboardData);
+      // Load leaderboard data
+      const leaderboardResponse = await ApiService.getLeaderboard();
+      setLeaderboard(leaderboardResponse.leaderboard || mockLeaderboardData);
       
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-      setError('Failed to load data. Using demo data.');
-      // Fallback to mock data
-      setUserData(mockUser);
-      setCoins(mockUser.coins);
-      setTransactions(mockTransactionsData);
+      console.error('Error loading dashboard data:', error);
+      setError('Failed to load dashboard data');
       setLeaderboard(mockLeaderboardData);
     } finally {
       setLoading(false);
@@ -266,7 +222,7 @@ const Dashboard = () => {
 
   const handleClaim = async () => {
     try {
-      const userId = authUser?._id || userData._id || DEMO_USER_ID;
+      const userId = user?._id;
       const response = await ApiService.claimDailyBonus(userId);
       if (response.success) {
         await refreshUser(); // Refresh user data from the database
@@ -299,8 +255,8 @@ const Dashboard = () => {
             ) : (
               <>
                 <div className="user-profile">
-                  <div className="user-avatar">{(userData.username || userData.name || "Demo User").charAt(0).toUpperCase()}</div>
-                  <span className="user-name">{userData.username || userData.name || "Demo User"}</span>
+                  <div className="user-avatar">{(user?.username || user?.name || "Demo User").charAt(0).toUpperCase()}</div>
+                  <span className="user-name">{user?.username || user?.name || "Demo User"}</span>
                 </div>
               </>
             )}
@@ -310,16 +266,15 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="welcome-section">
           <h2 className="welcome-title">
-            Welcome back, <span className="welcome-name">{userData.name}</span>
+            Welcome back, <span className="welcome-name">{user?.username || user?.name || "User"}</span>
           </h2>
           <p className="welcome-subtitle">Your daily rewards and progress await.</p>
           
           <div className="claim-section">
-            <ClaimButton onClaim={handleClaim} userId={authUser?._id || userData._id || DEMO_USER_ID} />
+            <ClaimButton onClaim={handleClaim} userId={user?._id} />
             <p className="claim-description">Claim your daily bonus and keep your streak alive.</p>
           </div>
         </div>
-
 
         {/* Streak Calendar */}
         <div className="dashboard-section">
@@ -328,10 +283,36 @@ const Dashboard = () => {
         </div>
 
         {/* Badge System */}
-        <BadgeSystem 
-          userCoins={coins} 
-          onBadgeUnlock={handleBadgeUnlock}
-        />
+        <div className="dashboard-section">
+          <h2 className="section-title">🏆 Badges</h2>
+          <div className="stats">
+            <div className="stats-item">
+              <div className="stat-value">{user?.coins || 0}</div>
+              <div className="stat-label">Total Coins</div>
+            </div>
+            <div className="stats-item">
+              <div className="stat-value">{user?.badges?.length || 0}</div>
+              <div className="stat-label">Badges Earned</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Leaderboard */}
+        <div className="dashboard-section">
+          <h2 className="section-title">🏆 Leaderboard</h2>
+          <div className="leaderboard">
+            {leaderboard.map((item, index) => (
+              <div className="leaderboard-item" key={index}>
+                <div className="rank">#{index + 1}</div>
+                <div className="username">{item.username}</div>
+                <div className="coins">{item.coins} coins</div>
+                {user && item.username === user?.username && (
+                  <div className="you-indicator">You</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
