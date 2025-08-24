@@ -28,23 +28,46 @@ const mockTransactionsData = [
 ];
 
 // ===== Components =====
-const ClaimButton = ({ onClaim }) => {
+const ClaimButton = ({ onClaim, userId }) => {
   const [canClaim, setCanClaim] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleClick = () => {
-    if (canClaim) {
-      setIsLoading(true);
-      setTimeout(() => {
-        onClaim(10);
-        setIsLoading(false);
-        setShowSuccess(true);
-        setTimeout(() => {
+  // Check claim status on component mount
+  useEffect(() => {
+    const checkClaimStatus = async () => {
+      try {
+        const response = await ApiService.claimDailyBonus(userId || 'user-123');
+        // If we get an error about already claimed, disable the button
+        setCanClaim(true);
+      } catch (error) {
+        if (error.message.includes('already claimed')) {
           setCanClaim(false);
-          setShowSuccess(false);
-        }, 2000);
-      }, 1500);
+        }
+      }
+    };
+    checkClaimStatus();
+  }, [userId]);
+
+  const handleClick = async () => {
+    if (canClaim && !isLoading) {
+      setIsLoading(true);
+      try {
+        const response = await ApiService.claimDailyBonus(userId || 'user-123');
+        if (response.success) {
+          onClaim(response.bonusAmount);
+          setShowSuccess(true);
+          setCanClaim(false);
+          setTimeout(() => setShowSuccess(false), 2000);
+        }
+      } catch (error) {
+        console.error('Failed to claim bonus:', error);
+        if (error.message.includes('already claimed')) {
+          setCanClaim(false);
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

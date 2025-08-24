@@ -1,5 +1,40 @@
-/* App.css */
-body { font-family: Arial, sans-serif; background: #f7f7f7; }
+/* App.css with Dark Mode Support */
+.app-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-content {
+  padding: 0;
+  margin: 0;
+  background: var(--bg-primary);
+}
+
+/* Remove default margins from Dashboard container */
+.app-content .dashboard-container {
+  padding: 20px;
+  margin: 0;
+  background: var(--bg-primary);
+}
+
+.app-content .dashboard-content {
+  margin: 0 auto;
+}
+
+/* Dark mode body styles */
+body { 
+  font-family: Arial, sans-serif; 
+  background: var(--bg-primary); 
+  color: var(--text-primary); 
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
 
 /* Animations */
 .fade-in { animation: fadeIn 400ms ease both; }

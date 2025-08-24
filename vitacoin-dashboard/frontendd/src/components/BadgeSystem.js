@@ -1,9 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import './BadgeSystem.css';
 
-const BadgeSystem = ({ userCoins, onBadgeUnlock }) => {
+const BadgeSystem = ({ coins = 0, onBadgeUnlock }) => {
+  const [badgeImages, setBadgeImages] = useState({});
   const [unlockedBadges, setUnlockedBadges] = useState([]);
   const [showUnlockAnimation, setShowUnlockAnimation] = useState(null);
+  const userCoins = coins;
+
+  // Load custom badge images
+  useEffect(() => {
+    const loadBadgeImages = async () => {
+      const images = {};
+      const badgeTypes = ['bronze', 'silver', 'gold', 'platinum', 'diamond'];
+      
+      for (const type of badgeTypes) {
+        try {
+          // Try to import custom images from assets/badges folder
+          const image = await import(`../assets/badges/${type}.png`);
+          images[type] = image.default;
+        } catch (error) {
+          try {
+            // Fallback to .jpg
+            const image = await import(`../assets/badges/${type}.jpg`);
+            images[type] = image.default;
+          } catch (jpgError) {
+            // Use default emoji if no custom image found
+            images[type] = null;
+          }
+        }
+      }
+      setBadgeImages(images);
+    };
+
+    loadBadgeImages();
+  }, []);
+
+  const getBadgeLevel = (coins) => {
+    if (coins >= 1000) return { level: 5, name: 'Diamond', color: '#b9f2ff', icon: '💎', type: 'diamond' };
+    if (coins >= 600) return { level: 4, name: 'Platinum', color: '#e5e4e2', icon: '🏆', type: 'platinum' };
+    if (coins >= 300) return { level: 3, name: 'Gold', color: '#ffd700', icon: '🥇', type: 'gold' };
+    if (coins >= 100) return { level: 2, name: 'Silver', color: '#c0c0c0', icon: '🥈', type: 'silver' };
+    return { level: 1, name: 'Bronze', color: '#cd7f32', icon: '🥉', type: 'bronze' };
+  };
+
+  const renderBadgeIcon = (badge) => {
+    const customImage = badgeImages[badge.type];
+    if (customImage) {
+      return <img src={customImage} alt={badge.name} className="badge-custom-image" />;
+    }
+    return <span className="badge-emoji">{badge.icon}</span>;
+  };
 
   const badges = [
     {
@@ -11,50 +57,50 @@ const BadgeSystem = ({ userCoins, onBadgeUnlock }) => {
       name: "Bronze Explorer",
       description: "Earned your first 100 coins",
       minCoins: 100,
-      maxCoins: 500,
-      image: "/src/assets/badges/bronze-badge.svg",
+      maxCoins: 299,
+      type: 'bronze',
       color: "#CD7F32",
       gradient: "linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)"
     },
     {
       id: 2,
       name: "Silver Achiever", 
-      description: "Reached 501 coins milestone",
-      minCoins: 501,
-      maxCoins: 1300,
-      image: "/src/assets/badges/silver-badge.svg",
+      description: "Reached 300 coins milestone",
+      minCoins: 300,
+      maxCoins: 599,
+      type: 'silver',
       color: "#C0C0C0",
       gradient: "linear-gradient(135deg, #C0C0C0 0%, #808080 100%)"
     },
     {
       id: 3,
       name: "Gold Master",
-      description: "Accumulated 1301 coins",
-      minCoins: 1301,
-      maxCoins: 2500,
-      image: "/src/assets/badges/gold-badge.svg",
+      description: "Accumulated 600 coins",
+      minCoins: 600,
+      maxCoins: 999,
+      type: 'gold',
       color: "#FFD700",
       gradient: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)"
     },
     {
       id: 4,
-      name: "Diamond Elite",
-      description: "Reached 2501 coins milestone",
-      minCoins: 2501,
-      maxCoins: 4000,
-      image: "/src/assets/badges/diamond-badge.svg",
-      color: "#00BFFF",
-      gradient: "linear-gradient(135deg, #00BFFF 0%, #0080FF 100%)"
+      name: "Platinum Elite",
+      description: "Reached 1000 coins milestone",
+      minCoins: 1000,
+      maxCoins: 1999,
+      type: 'platinum',
+      color: "#E5E4E2",
+      gradient: "linear-gradient(135deg, #E5E4E2 0%, #C0C0C0 100%)"
     },
     {
       id: 5,
-      name: "Legendary Champion",
-      description: "Achieved 4000+ coins",
-      minCoins: 4000,
+      name: "Diamond Champion",
+      description: "Achieved 2000+ coins",
+      minCoins: 2000,
       maxCoins: Infinity,
-      image: "/src/assets/badges/legendary-badge.svg",
-      color: "#9932CC",
-      gradient: "linear-gradient(135deg, #9932CC 0%, #8A2BE2 100%)"
+      type: 'diamond',
+      color: "#00BFFF",
+      gradient: "linear-gradient(135deg, #00BFFF 0%, #0080FF 100%)"
     }
   ];
 
@@ -163,6 +209,10 @@ const BadgeSystem = ({ userCoins, onBadgeUnlock }) => {
                 </div>
               </div>
               
+              <div className="badge-icon-display">
+                {renderBadgeIcon(badge)}
+              </div>
+              
               {!isUnlocked && (
                 <div className="badge-overlay">
                   <div className="coins-needed">
@@ -180,7 +230,7 @@ const BadgeSystem = ({ userCoins, onBadgeUnlock }) => {
           <div className="unlock-content">
             <div className="unlock-animation">
               <div className="unlock-badge" style={{ background: showUnlockAnimation.gradient }}>
-                <img src={showUnlockAnimation.image} alt={showUnlockAnimation.name} className="unlock-badge-svg" />
+                {renderBadgeIcon(showUnlockAnimation)}
               </div>
               <div className="unlock-sparkles">
                 <span className="sparkle">✨</span>

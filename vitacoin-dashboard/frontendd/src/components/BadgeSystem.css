@@ -153,9 +153,27 @@
 }
 
 .unlock-badge-svg {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.badge-custom-image {
+  width: 40px;
+  height: 40px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.badge-emoji {
+  font-size: 32px;
+}
+
+.badge-icon-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .badge-card.unlocked .badge-image {

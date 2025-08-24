@@ -1,0 +1,293 @@
+/* Dark Mode Global Variables and Styles */
+
+/* CSS Custom Properties for Theme */
+:root {
+  /* Light Mode Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --accent-color: #ffd700;
+  --accent-hover: #ffed4e;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --warning-color: #ff9800;
+  --info-color: #2196f3;
+  
+  /* Card and Component Colors */
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  
+  /* Navigation Colors */
+  --nav-bg: #ffffff;
+  --nav-border: #dee2e6;
+  --nav-text: #1a1a1a;
+  --nav-hover: #f8f9fa;
+  
+  /* Button Colors */
+  --btn-primary-bg: linear-gradient(135deg, #ffd700, #ffed4e);
+  --btn-primary-text: #1a1a1a;
+  --btn-secondary-bg: #6c757d;
+  --btn-secondary-text: #ffffff;
+  
+  /* Input Colors */
+  --input-bg: #ffffff;
+  --input-border: #dee2e6;
+  --input-text: #1a1a1a;
+  --input-focus-border: #ffd700;
+  
+  /* Toggle Colors */
+  --toggle-track-bg: #e9ecef;
+  --toggle-thumb-bg: #ffffff;
+}
+
+/* Dark Mode Colors */
+.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-muted: #666666;
+  --border-color: #404040;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --accent-color: #ffd700;
+  --accent-hover: #ffed4e;
+  --success-color: #66bb6a;
+  --error-color: #ef5350;
+  --warning-color: #ffb74d;
+  --info-color: #42a5f5;
+  
+  /* Card and Component Colors */
+  --card-bg: #1e1e1e;
+  --card-border: #404040;
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --card-hover-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  
+  /* Navigation Colors */
+  --nav-bg: #1e1e1e;
+  --nav-border: #404040;
+  --nav-text: #ffffff;
+  --nav-hover: #2d2d2d;
+  
+  /* Button Colors */
+  --btn-primary-bg: linear-gradient(135deg, #ffd700, #ffed4e);
+  --btn-primary-text: #1a1a1a;
+  --btn-secondary-bg: #404040;
+  --btn-secondary-text: #ffffff;
+  
+  /* Input Colors */
+  --input-bg: #2d2d2d;
+  --input-border: #404040;
+  --input-text: #ffffff;
+  --input-focus-border: #ffd700;
+  
+  /* Toggle Colors */
+  --toggle-track-bg: #404040;
+  --toggle-thumb-bg: #1a1a1a;
+}
+
+/* Global Dark Mode Styles */
+.dark-mode body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar Styles */
+.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Selection Styles */
+.dark-mode ::selection {
+  background: var(--accent-color);
+  color: var(--bg-primary);
+}
+
+/* Focus Styles */
+.dark-mode *:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Link Styles */
+.dark-mode a {
+  color: var(--accent-color);
+  transition: color 0.3s ease;
+}
+
+.dark-mode a:hover {
+  color: var(--accent-hover);
+}
+
+/* Form Elements */
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+/* Button Styles */
+.dark-mode button {
+  transition: all 0.3s ease;
+}
+
+/* Card Styles */
+.dark-mode .card,
+.dark-mode .content-card,
+.dark-mode .profile-section,
+.dark-mode .transaction-item,
+.dark-mode .quiz-card,
+.dark-mode .stat-card,
+.dark-mode .summary-card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.dark-mode .card:hover,
+.dark-mode .content-card:hover,
+.dark-mode .profile-section:hover,
+.dark-mode .transaction-item:hover,
+.dark-mode .quiz-card:hover,
+.dark-mode .stat-card:hover,
+.dark-mode .summary-card:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* Navigation Styles */
+.dark-mode .nav,
+.dark-mode .navigation,
+.dark-mode .header {
+  background: var(--nav-bg);
+  border-color: var(--nav-border);
+  color: var(--nav-text);
+}
+
+.dark-mode .nav-item:hover,
+.dark-mode .nav-link:hover {
+  background: var(--nav-hover);
+}
+
+/* Page Container Styles */
+.dark-mode .page-container {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Text Styles */
+.dark-mode .text-muted {
+  color: var(--text-muted) !important;
+}
+
+.dark-mode .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Badge and Label Styles */
+.dark-mode .badge,
+.dark-mode .label,
+.dark-mode .tag {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Loading and Spinner Styles */
+.dark-mode .loading-spinner {
+  border-color: var(--border-color);
+  border-top-color: var(--accent-color);
+}
+
+/* Modal and Overlay Styles */
+.dark-mode .modal,
+.dark-mode .overlay {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.dark-mode .modal-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Table Styles */
+.dark-mode table {
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.dark-mode th,
+.dark-mode td {
+  border-color: var(--border-color);
+}
+
+.dark-mode tr:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Code and Pre Styles */
+.dark-mode code,
+.dark-mode pre {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Transition for smooth theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions during theme change to prevent flash */
+.theme-transitioning * {
+  transition: none !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dark-mode {
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --text-primary: #ffffff;
+    --border-color: #555555;
+    --accent-color: #ffff00;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .dark-mode * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
